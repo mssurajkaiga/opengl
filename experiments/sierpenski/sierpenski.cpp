@@ -7,7 +7,7 @@
 using namespace Eigen;
 
 #define BUFFER_OFFSET(bytes) ((GLvoid*) (bytes))
-const int NumPoints = 5000;
+const int NumPoints = 20000;
 
 static char* readShaderSource(const char* shaderFile)
 {
@@ -18,7 +18,7 @@ static char* readShaderSource(const char* shaderFile)
 	fseek(fp, 0L, SEEK_SET);
 	char* buf = new char[size + 1];
 	fread(buf, 1, size, fp);
-	buf[size] = ' ';
+	buf[size] = '\0';
 	fclose(fp);
 	return buf;
 }
@@ -36,8 +36,7 @@ GLuint InitShader(const char* vShaderFile, const char* fShaderFile)
 		{ fShaderFile, GL_FRAGMENT_SHADER, NULL }
 	};
 
-	GLuint program;
-	program = glCreateProgram();
+	GLuint program = glCreateProgram();
 
 	for ( int i = 0; i < 2; ++i ) {
 		Shader& s = shaders[i];
@@ -102,8 +101,8 @@ void init()
 	
 	GLuint program;
 	program = InitShader("vshader.glsl", "fshader.glsl");
-	glUseProgram(program);
-/*
+	//glUseProgram(program);
+
 	GLuint vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -119,7 +118,7 @@ void init()
 	glVertexAttribPointer(loc, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
 
 	glClearColor(1, 1, 1, 1);
-	*/
+	
 }
 
 void display()
@@ -132,8 +131,7 @@ void display()
 int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glEnable(GL_DEPTH_TEST);
+	glutInitDisplayMode(GLUT_RGBA);
 	glutInitWindowSize(500, 500);
 	glutInitWindowPosition(0, 0);
 	
@@ -142,9 +140,10 @@ int main(int argc, char** argv)
 
 	glutCreateWindow("Sierpinskit Gasket");
 
-	glutDisplayFunc(display);
+	glewInit();
 	init();
-	glutMainLoop();
+	glutDisplayFunc(display);
 
+	glutMainLoop();
 	return 0;
 }
